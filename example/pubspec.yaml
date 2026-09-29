@@ -1,0 +1,24 @@
+name: quick_controls_example
+description: Demonstrates quick_controls — a counter, a toggle and a button.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.0
+  flutter: ">=3.44.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # The package under demonstration, by path, so a change to the plugin is
+  # exercised here before it is released rather than after.
+  quick_controls:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.3.0
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,38 @@
+name: quick_controls
+description: >-
+  One Dart API for iOS 18 Control Center controls and Android Quick Settings
+  tiles. Taps are recorded as pending events your app applies exactly once.
+version: 0.1.0
+repository: https://github.com/jameskrupnik/quick_controls
+issue_tracker: https://github.com/jameskrupnik/quick_controls/issues
+
+environment:
+  sdk: ^3.6.0
+  # Only 3.44 has been built against. The Android half uses the AGP 9 plugin
+  # template 3.44 generates, and nothing older has been tried.
+  flutter: ">=3.44.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.3.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.illuminationdevelopment.quick_controls
+        pluginClass: QuickControlsPlugin
+      ios:
+        pluginClass: QuickControlsPlugin
+
+topics:
+  - widgets
+  - quick-settings
+  - control-center
+  - ios
+  - android

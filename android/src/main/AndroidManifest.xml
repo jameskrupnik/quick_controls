@@ -1,0 +1,51 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+    The tile pool. Three generic TileService slots, all disabled, so a fresh
+    install shows nothing in the Quick Settings editor. QuickControls.initialize
+    enables one slot per declared control with setComponentEnabledSetting,
+    which is why a host app needs no manifest edits of its own.
+
+    Why a fixed pool: a TileService must be declared in a manifest, and the
+    manifest is fixed at build time. The pool size is the one number to change
+    if three is not enough; QuickControlsStore.SLOT_CLASSES must list the same
+    classes.
+
+    No android:label: the editor then shows the app's own name, which is the
+    least wrong thing for a generic slot. The live label is set on the Tile
+    once it is placed. No android:process either, deliberately: the tiles
+    must run in the app's main process so one in-process lock covers every
+    writer of the pending-event log. See QuickControlsStore.
+    -->
+    <application>
+        <service
+            android:name="com.illuminationdevelopment.quick_controls.QuickControlTile0"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/quick_controls_tile_default"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.illuminationdevelopment.quick_controls.QuickControlTile1"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/quick_controls_tile_default"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.illuminationdevelopment.quick_controls.QuickControlTile2"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/quick_controls_tile_default"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>
