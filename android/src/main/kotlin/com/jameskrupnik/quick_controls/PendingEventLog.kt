@@ -1,4 +1,4 @@
-package com.illuminationdevelopment.quick_controls
+package com.jameskrupnik.quick_controls
 
 import org.json.JSONArray
 import org.json.JSONException

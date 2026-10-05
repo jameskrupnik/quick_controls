@@ -9,7 +9,7 @@ App Group, which the app drains on resume.
                        DESC
   s.homepage         = 'https://github.com/jameskrupnik/quick_controls'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Illumination Development' => 'james.krupnik@illuminationdevelopment.com' }
+  s.author           = { 'James Krupnik' => 'jameskrupnik@gmail.com' }
   s.source           = { :path => '.' }
 
   # The plugin plus the one kit file it shares with the widget extension.

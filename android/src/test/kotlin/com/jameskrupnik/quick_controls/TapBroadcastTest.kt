@@ -1,4 +1,4 @@
-package com.illuminationdevelopment.quick_controls
+package com.jameskrupnik.quick_controls
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -10,7 +10,7 @@ internal class TapBroadcastTest {
         // it, and Android 8+ would not deliver it to a manifest receiver.
         assertEquals(
             TapBroadcast(
-                "com.illuminationdevelopment.quick_controls.action.TAP_RECORDED",
+                "com.jameskrupnik.quick_controls.action.TAP_RECORDED",
                 "com.example.host",
                 "row",
             ),
@@ -23,7 +23,7 @@ internal class TapBroadcastTest {
         // Hosts declare this string in their manifests; changing it silently
         // stops every host's receiver.
         assertEquals(
-            "com.illuminationdevelopment.quick_controls.action.TAP_RECORDED",
+            "com.jameskrupnik.quick_controls.action.TAP_RECORDED",
             TapBroadcast.ACTION,
         )
         assertEquals("controlId", TapBroadcast.EXTRA_CONTROL_ID)

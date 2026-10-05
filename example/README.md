@@ -10,6 +10,6 @@ reference. It is the worked version of the README's iOS setup steps. Its
 deployment target is iOS 17, with the controls behind `#available(iOS 18.0,
 *)`, to prove the kit fits in an extension that also serves older widgets.
 
-The App Group `group.com.illuminationdevelopment.quickcontrols.example` is
+The App Group `group.com.jameskrupnik.quickcontrols.example` is
 not registered with Apple. Simulator builds work without it; a device build
 will not sign until it is registered.

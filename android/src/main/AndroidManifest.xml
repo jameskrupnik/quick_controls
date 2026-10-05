@@ -18,7 +18,7 @@
     -->
     <application>
         <service
-            android:name="com.illuminationdevelopment.quick_controls.QuickControlTile0"
+            android:name="com.jameskrupnik.quick_controls.QuickControlTile0"
             android:enabled="false"
             android:exported="true"
             android:icon="@drawable/quick_controls_tile_default"
@@ -28,7 +28,7 @@
             </intent-filter>
         </service>
         <service
-            android:name="com.illuminationdevelopment.quick_controls.QuickControlTile1"
+            android:name="com.jameskrupnik.quick_controls.QuickControlTile1"
             android:enabled="false"
             android:exported="true"
             android:icon="@drawable/quick_controls_tile_default"
@@ -38,7 +38,7 @@
             </intent-filter>
         </service>
         <service
-            android:name="com.illuminationdevelopment.quick_controls.QuickControlTile2"
+            android:name="com.jameskrupnik.quick_controls.QuickControlTile2"
             android:enabled="false"
             android:exported="true"
             android:icon="@drawable/quick_controls_tile_default"

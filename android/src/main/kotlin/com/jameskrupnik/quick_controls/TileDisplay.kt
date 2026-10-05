@@ -1,4 +1,4 @@
-package com.illuminationdevelopment.quick_controls
+package com.jameskrupnik.quick_controls
 
 /**
  * What a tile shows, worked out from the app's last published value plus the

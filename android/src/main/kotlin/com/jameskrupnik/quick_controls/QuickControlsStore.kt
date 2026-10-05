@@ -1,4 +1,4 @@
-package com.illuminationdevelopment.quick_controls
+package com.jameskrupnik.quick_controls
 
 import android.content.ComponentName
 import android.content.Context
@@ -118,7 +118,7 @@ class QuickControlsStore(context: Context) {
     }
 
     companion object {
-        const val FILE = "com.illuminationdevelopment.quick_controls"
+        const val FILE = "com.jameskrupnik.quick_controls"
         private const val SLOTS = "slots"
         private const val CONFIG = "config."
         private const val VALUE = "value."
@@ -130,9 +130,9 @@ class QuickControlsStore(context: Context) {
          * Must list the same classes, in the same order, as the manifest.
          */
         val SLOT_CLASSES = listOf(
-            "com.illuminationdevelopment.quick_controls.QuickControlTile0",
-            "com.illuminationdevelopment.quick_controls.QuickControlTile1",
-            "com.illuminationdevelopment.quick_controls.QuickControlTile2",
+            "com.jameskrupnik.quick_controls.QuickControlTile0",
+            "com.jameskrupnik.quick_controls.QuickControlTile1",
+            "com.jameskrupnik.quick_controls.QuickControlTile2",
         )
     }
 }

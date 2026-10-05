@@ -141,7 +141,7 @@ public struct QuickControlsStore {
     /// a running app can drain at once. Scoped by group, since Darwin
     /// notifications are system-wide.
     public static func changedNotificationName(appGroupId: String) -> String {
-        "com.illuminationdevelopment.quick_controls.changed." + appGroupId
+        "com.jameskrupnik.quick_controls.changed." + appGroupId
     }
 
     public func postChanged() {

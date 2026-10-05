@@ -8,7 +8,7 @@ void main() => runApp(const QuickControlsExampleApp());
 /// Must match the App Group in both `Runner.entitlements` and
 /// `ExampleControls.entitlements`, and `QuickControlsAppGroup` in the
 /// extension's Info.plist.
-const appGroupId = 'group.com.illuminationdevelopment.quickcontrols.example';
+const appGroupId = 'group.com.jameskrupnik.quickcontrols.example';
 
 /// The three kinds, one each. The ids must match the `controlId`s in
 /// `ios/ExampleControls/ExampleControls.swift`.

@@ -1,4 +1,4 @@
-package com.illuminationdevelopment.quick_controls_example
+package com.jameskrupnik.quick_controls_example
 
 import io.flutter.embedding.android.FlutterActivity
 

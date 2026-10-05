@@ -203,7 +203,7 @@ its configuration in SharedPreferences. The host manifest is never touched.
   throws), so API 34+ uses the `PendingIntent` overload. On a locked device
   the tile calls `unlockAndRun` first.
 - **Every recorded tap also broadcasts `TapBroadcast.ACTION`**
-  (`com.illuminationdevelopment.quick_controls.action.TAP_RECORDED`), scoped
+  (`com.jameskrupnik.quick_controls.action.TAP_RECORDED`), scoped
   to the host's own package, with the control id in the `controlId` extra.
   The engine ping only reaches a running engine; this reaches a manifest
   receiver with the app not running, e.g. a home screen widget that shows the

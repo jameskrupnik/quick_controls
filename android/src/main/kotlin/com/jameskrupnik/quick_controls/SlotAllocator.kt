@@ -1,4 +1,4 @@
-package com.illuminationdevelopment.quick_controls
+package com.jameskrupnik.quick_controls
 
 /** Thrown when more controls are declared than the manifest has tile slots. */
 class TooManyControlsException(declared: Int, slots: Int) :

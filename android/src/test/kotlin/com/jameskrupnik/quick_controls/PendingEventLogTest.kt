@@ -1,4 +1,4 @@
-package com.illuminationdevelopment.quick_controls
+package com.jameskrupnik.quick_controls
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch

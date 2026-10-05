@@ -26,6 +26,6 @@
 		<string>com.apple.widgetkit-extension</string>
 	</dict>
 	<key>QuickControlsAppGroup</key>
-	<string>group.com.illuminationdevelopment.quickcontrols.example</string>
+	<string>group.com.jameskrupnik.quickcontrols.example</string>
 </dict>
 </plist>

@@ -1,4 +1,4 @@
-package com.illuminationdevelopment.quick_controls
+package com.jameskrupnik.quick_controls
 
 /**
  * The slice of SharedPreferences the logic needs, so that logic runs in a

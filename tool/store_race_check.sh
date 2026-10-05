@@ -6,7 +6,7 @@ set -eu
 cd "$(dirname "$0")"
 TAPPERS=${TAPPERS:-4}
 TAPS=${TAPS:-250}
-SUITE="com.illuminationdevelopment.quick_controls.racecheck.$$"
+SUITE="com.jameskrupnik.quick_controls.racecheck.$$"
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 

@@ -1,4 +1,4 @@
-group = "com.illuminationdevelopment.quick_controls"
+group = "com.jameskrupnik.quick_controls"
 version = "0.1.0"
 
 buildscript {
@@ -26,7 +26,7 @@ plugins {
 }
 
 android {
-    namespace = "com.illuminationdevelopment.quick_controls"
+    namespace = "com.jameskrupnik.quick_controls"
 
     compileSdk = 36
 

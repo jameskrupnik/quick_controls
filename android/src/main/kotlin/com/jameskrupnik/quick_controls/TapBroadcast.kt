@@ -1,4 +1,4 @@
-package com.illuminationdevelopment.quick_controls
+package com.jameskrupnik.quick_controls
 
 import android.content.Context
 import android.content.Intent
@@ -29,7 +29,7 @@ data class TapBroadcast(val action: String, val packageName: String, val control
     }
 
     companion object {
-        const val ACTION = "com.illuminationdevelopment.quick_controls.action.TAP_RECORDED"
+        const val ACTION = "com.jameskrupnik.quick_controls.action.TAP_RECORDED"
         const val EXTRA_CONTROL_ID = "controlId"
 
         /** The broadcast for a tap on [controlId] in the app [packageName]. */
