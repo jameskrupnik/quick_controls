@@ -34,55 +34,19 @@ await QuickControls.instance.setValue('row_plus_one', rows);
 This keeps a single writer for the app's data. That single writer is the
 reason a tap and a save that race cannot lose an increment.
 
-## Status: what is proven and what is not
-
-**Everything compiles and every piece of logic is tested. Nothing has been
-tapped on a real Control Center or a real Quick Settings panel.**
-
-| Layer | State |
-|---|---|
-| Dart API, event parsing, exactly-once stream | 43 tests, green |
-| Android pending log, slot allocation, tile display maths, tap broadcast, ping sink ownership | 23 JVM unit tests, green, including a 4-thread tap/drain race. **The race test fails if the lock is removed**: checked by removing it |
-| Android plugin + 3 `TileService` slots | Installed and tapped in Stitch Keeper on a Pixel Tablet API 35 emulator (2026-09-26) through `cmd statusbar add-tile`/`click-tile`: slot 0 enabled by `initialize`, taps recorded, drained exactly once, subtitle updated, `TapBroadcast` received by a home widget. Not on a real phone; `requestAddTile` still never run |
-| iOS plugin, CocoaPods | `flutter build ios --simulator --no-codesign` succeeds |
-| iOS plugin, Swift Package Manager | The same build succeeds with SPM on. The `QuickControlsShared` module is linked and the plugin is absent from `Podfile.lock` |
-| iOS kit (`QuickControlsKit`) | Compiled inside a **real widget extension target** in `example/ios` (deployment target 17.0, controls behind `#available(iOS 18)`). All four intents are in the extension's extracted App Intents metadata, all non-discoverable. It also typechecks with `swiftc` in Swift 5 and Swift 6 modes |
-| iOS store race-safety | `tool/store_race_check.sh`: 4 macOS processes × 1,500 taps against a draining process over one `UserDefaults` suite (cfprefsd). 6,000 drained, 6,000 unique. This is macOS, not iOS |
-| A control in Control Center, the Lock Screen or the Action button | **Never seen.** `simctl` cannot add a control or tap one |
-| A tile in Quick Settings | Seen and tapped on an emulator only (see above). `requestAddTile`'s dialog and `startActivityAndCollapse` on Android 14: **never run** |
-| Darwin-notification pings reaching a running iOS app | **Never run** |
-| `OpenURLIntent` from `QuickOpeningButtonControl` actually opening an app | **Never run**. Apple documents it for universal links; a custom scheme is untested |
-
-These are the things most likely to need correcting on first device run:
-
-- **How a counter shows its number on iOS.** It is currently
-  `Label("Row 42", …)`. Control Center may lay out a title and a value
-  differently from that, and it has not been looked at.
-- **Cross-process `UserDefaults` freshness on iOS.** The app reads what the
-  extension wrote through cfprefsd. That worked across processes on macOS. On
-  iOS, a stale read would *delay* a tap to the next drain, never lose it, but
-  that has not been observed either way.
-- **Tile label in the Quick Settings editor.** Slots have no manifest label,
-  so the editor lists every slot under the app's name until one is placed and
-  draws its live label.
-
 ## Install
 
 ```yaml
 dependencies:
-  quick_controls:
-    path: ../quick_controls   # not published
+  quick_controls: ^0.1.0
 ```
 
-Requires Flutter 3.44 (the only version built against), **iOS 15** and
+Requires Flutter 3.44, **iOS 15** and
 **Android `minSdk` 24**. The iOS half supports both Swift Package Manager and
 CocoaPods.
 
 iOS 15, not the template's 13, because the plugin imports WidgetKit to reach
-`ControlCenter`. WidgetKit does not exist before iOS 14. In the CocoaPods
-build the linker did weak-link it (`otool -L` shows `weak`), so 13 might work,
-but that was not checked under SPM or on an iOS 13 device. 15 removes the
-question.
+`ControlCenter`. WidgetKit does not exist before iOS 14.
 
 ## Use
 
@@ -172,7 +136,9 @@ counter accumulates. It took seconds at 6,000 in the stress check.
 
 The one visible glitch: between a drain and the `setValue` that follows it, a
 control that happened to redraw would show the old baseline without the
-drained taps. `setValue` redraws it immediately afterwards.
+drained taps. `setValue` redraws it immediately afterwards. A toggle tile
+tapped in that window still records the opposite of what it shows, not of
+the stale baseline.
 
 ## Android setup
 
@@ -193,11 +159,32 @@ its configuration in SharedPreferences. The host manifest is never touched.
   whose Dart side listens owns the ping sink, so another engine detaching does
   not cut the app off from live taps.
 - **A counter shows `base + pending`** as the tile's subtitle on Android 10+,
-  and on the label below that. A toggle shows active/inactive. A tap redraws
-  the tile itself, so the number moves with the app closed.
+  and on the label below that. A toggle shows active/inactive, and a tap
+  flips what the tile shows. A tap redraws the tile itself, so the number
+  moves with the app closed.
+- **Each kind has its own default icon**: a plus in a circle for a counter, a
+  power symbol for a toggle, a tapping hand for a button, matching the iOS
+  defaults. The compact tile layout hides the label, so tiles that shared one
+  icon could not be told apart.
 - **`androidIcon`** names a drawable in *your* app's `res/drawable`. It must be
   single-colour, because Quick Settings tints it. An unknown name falls back
-  to the plugin's plus-in-a-circle.
+  to the kind's default.
+
+  **Keep it from resource shrinking.** Flutter release builds shrink
+  resources, and a drawable named only from Dart has no reference the
+  shrinker can see, so it is stripped and the tile shows the default instead.
+  Checked: an unreferenced drawable was absent from the example's release APK,
+  and present once listed here. Add `android/app/src/main/res/raw/keep.xml`:
+
+  ```xml
+  <?xml version="1.0" encoding="utf-8"?>
+  <resources xmlns:tools="http://schemas.android.com/tools"
+      tools:keep="@drawable/ic_tile_*" />
+  ```
+
+  with a pattern (or a comma-separated list) that covers every `androidIcon`.
+- **The Quick Settings editor lists every slot under the app's name.** Slots
+  have no manifest label, so a tile shows its live label only once placed.
 - **`opensApp: true`** opens the app after recording. Android 14 removed the
   `Intent` overload of `startActivityAndCollapse` for apps targeting it (it
   throws), so API 34+ uses the `PendingIntent` overload. On a locked device

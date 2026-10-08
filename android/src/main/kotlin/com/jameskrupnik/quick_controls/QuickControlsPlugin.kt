@@ -110,16 +110,9 @@ class QuickControlsPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, Even
             return
         }
         val statusBar = context.getSystemService(StatusBarManager::class.java)
-        val icon = Icon.createWithResource(context, store.iconRes(config.androidIcon))
+        val icon = Icon.createWithResource(context, store.iconRes(config))
         statusBar.requestAddTileService(component, config.title, icon, context.mainExecutor) { code ->
-            result.success(
-                when (code) {
-                    StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED -> "added"
-                    StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED -> "alreadyAdded"
-                    StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_NOT_ADDED -> "notAdded"
-                    else -> "failed"
-                },
-            )
+            result.success(tileAddResultName(code))
         }
     }
 }

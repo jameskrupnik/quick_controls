@@ -133,6 +133,10 @@ void main() {
         () => controls.initialize(controls: const [rows]),
         throwsArgumentError,
       );
+      expect(
+        () => controls.initialize(controls: const [rows], iosAppGroupId: ''),
+        throwsArgumentError,
+      );
 
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       await controls.initialize(controls: const [rows]);
@@ -395,6 +399,10 @@ void main() {
         const QuickControl.counter(id: 'rows', title: 'Row').hashCode,
       );
       expect(rows, isNot(equals(light)));
+    });
+
+    test('toString names the kind, id and title', () {
+      expect(rows.toString(), 'QuickControl.counter(rows, "Row")');
     });
   });
 }

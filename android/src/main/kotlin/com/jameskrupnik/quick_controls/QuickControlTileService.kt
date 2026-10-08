@@ -36,8 +36,16 @@ abstract class QuickControlTileService(private val slot: Int) : TileService() {
         super.onClick()
         val config = store.configForSlot(slot) ?: return
         val state = store.state()
+        // What the user saw when they tapped. SystemUI delivers a click only
+        // to a listening tile, and onStartListening has redrawn it by then.
+        // See ControlState.eventForTap for why this beats the store.
+        val shownOn = when (qsTile?.state) {
+            Tile.STATE_ACTIVE -> true
+            Tile.STATE_INACTIVE -> false
+            else -> null
+        }
         store.events.record { pending ->
-            state.eventForTap(config, pending, UUID.randomUUID().toString(), System.currentTimeMillis())
+            state.eventForTap(config, pending, UUID.randomUUID().toString(), System.currentTimeMillis(), shownOn)
         }
         redraw()
         PingBus.ping(config.id)
@@ -64,7 +72,7 @@ abstract class QuickControlTileService(private val slot: Int) : TileService() {
         tile.label = display.label
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) tile.subtitle = display.subtitle
         tile.state = if (display.active) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        tile.icon = Icon.createWithResource(this, store.iconRes(config.androidIcon))
+        tile.icon = Icon.createWithResource(this, store.iconRes(config))
         tile.updateTile()
     }
 

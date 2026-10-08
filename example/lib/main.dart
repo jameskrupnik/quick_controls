@@ -53,6 +53,7 @@ class _QuickControlsExampleAppState extends State<QuickControlsExampleApp> {
 
   Future<void> _start() async {
     final supported = await _controls.isSupported();
+    if (!mounted) return;
     if (!supported) {
       setState(() => _status = 'Controls are not supported on this device.');
       return;
@@ -61,8 +62,10 @@ class _QuickControlsExampleAppState extends State<QuickControlsExampleApp> {
       iosAppGroupId: appGroupId,
       controls: const [rows, light, ping],
     );
+    if (!mounted) return;
     _live = _controls.events.listen((event) => _apply([event]));
     await _drain();
+    if (!mounted) return;
     setState(() => _status = 'Ready.');
   }
 
@@ -72,7 +75,9 @@ class _QuickControlsExampleAppState extends State<QuickControlsExampleApp> {
   /// order matters: publishing first would show the old number minus the
   /// taps just drained.
   Future<void> _apply(List<QuickControlEvent> events) async {
-    if (events.isEmpty) return;
+    // A real app saves the batch before this check; the example's state
+    // dies with the screen, so there is nothing left to apply it to.
+    if (events.isEmpty || !mounted) return;
     setState(() {
       _rows += events.deltaFor(rows.id);
       _light = events.latestToggleFor(light.id) ?? _light;
@@ -88,6 +93,7 @@ class _QuickControlsExampleAppState extends State<QuickControlsExampleApp> {
 
   Future<void> _addTile() async {
     final result = await _controls.requestAddTile(rows.id);
+    if (!mounted) return;
     setState(() => _status = 'Add tile: ${result.name}');
   }
 

@@ -42,6 +42,17 @@ internal class TileDisplayTest {
     }
 
     @Test
+    fun tap_onAToggle_betweenADrainAndSetToggled_flipsWhatTheTileShows() {
+        // The tile showed "on" from a pending tap. The app drained that tap
+        // but has not called setToggled yet, so the baseline still says off
+        // and nothing is pending. A tap now means "turn it off".
+        val state = ControlState(emptyMap(), mapOf("light" to false))
+        assertEquals(false, state.eventForTap(light, emptyList(), "x", 2, shownOn = true).isOn)
+        // With nothing drawn yet, the store's answer is all there is.
+        assertEquals(true, state.eventForTap(light, emptyList(), "x", 3, shownOn = null).isOn)
+    }
+
+    @Test
     fun tap_onACounter_recordsItsStep() {
         val stepThree = rows.copy(step = 3)
         assertEquals(3L, ControlState(emptyMap(), emptyMap()).eventForTap(stepThree, emptyList(), "x", 1).delta)

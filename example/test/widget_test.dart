@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quick_controls/quick_controls.dart';
 import 'package:quick_controls_example/main.dart';
@@ -49,5 +52,20 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('3'), findsOneWidget);
     expect(find.text('Ready.'), findsOneWidget);
+  });
+
+  testWidgets('leaving before the platform answers is not an error', (
+    tester,
+  ) async {
+    final supported = Completer<bool>();
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      QuickControls.channel,
+      (call) async => call.method == 'isSupported' ? supported.future : null,
+    );
+    await tester.pumpWidget(const QuickControlsExampleApp());
+    await tester.pumpWidget(const SizedBox());
+    supported.complete(false);
+    await tester.pump();
+    expect(tester.takeException(), isNull);
   });
 }

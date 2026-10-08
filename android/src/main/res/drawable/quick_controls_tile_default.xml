@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The fallback tile icon: a plus in a circle, one colour, because Quick
-     Settings tints every tile icon and a multi-colour one renders as a blob. -->
+<!-- A plus in a circle: a counter's default tile icon, and the icon every
+     slot shows in the Quick Settings editor before it is placed, where its
+     kind is not known yet. One colour, because Quick Settings tints every
+     tile icon and a multi-colour one renders as a blob. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

@@ -10,7 +10,15 @@ import 'package:quick_controls/src/quick_control.dart';
 /// re-applying a batch idempotent.
 @immutable
 class QuickControlEvent {
-  /// Creates an event. Normally built by the plugin, not by apps.
+  /// Creates an event.
+  ///
+  /// Normally built by the plugin, not by apps; an app's own tests can use it
+  /// to build a batch.
+  ///
+  /// Asserts that only a toggle has an [isOn], and that a toggle always does,
+  /// and that only a counter has a [delta]. A toggle without a state would
+  /// make `QuickControlEventBatch.latestToggleFor` answer `null` for a batch
+  /// that was toggled.
   const QuickControlEvent({
     required this.id,
     required this.controlId,
@@ -18,7 +26,14 @@ class QuickControlEvent {
     required this.recordedAt,
     this.delta = 0,
     this.isOn,
-  });
+  })  : assert(
+          (kind == QuickControlKind.toggle) == (isOn != null),
+          'isOn is required for a toggle and must be null for other kinds',
+        ),
+        assert(
+          kind == QuickControlKind.counter || delta == 0,
+          'delta must be 0 for a toggle or a button',
+        );
 
   /// Unique per tap, minted where the tap happened.
   final String id;
@@ -33,61 +48,15 @@ class QuickControlEvent {
   /// drained, which may be days later.
   final DateTime recordedAt;
 
-  /// What a counter tap adds. Zero for a button or toggle.
+  /// The amount a counter tap adds.
+  ///
+  /// Zero for a button or toggle.
   final int delta;
 
-  /// The state a toggle tap switched *to*. `null` for the other kinds.
-  final bool? isOn;
-
-  /// Reads one event from the native map, or returns `null` if it is not
-  /// one.
+  /// The state a toggle tap switched *to*.
   ///
-  /// Lenient on purpose. By the time this runs the batch has already been
-  /// removed from native storage, so throwing on one malformed entry would
-  /// lose every good entry beside it. A bad entry is dropped; the rest stand.
-  static QuickControlEvent? tryParse(Object? raw) {
-    if (raw is! Map) return null;
-    final id = raw['id'];
-    final controlId = raw['controlId'];
-    final kind = _kindNamed(raw['kind']);
-    final recordedAt = raw['recordedAt'];
-    if (id is! String || controlId is! String || kind == null) return null;
-    if (recordedAt is! num) return null;
-
-    final delta = raw['delta'];
-    final isOn = raw['isOn'];
-    if (kind == QuickControlKind.toggle && isOn is! bool) return null;
-
-    return QuickControlEvent(
-      id: id,
-      controlId: controlId,
-      kind: kind,
-      recordedAt: DateTime.fromMillisecondsSinceEpoch(recordedAt.toInt()),
-      delta:
-          kind == QuickControlKind.counter && delta is num ? delta.toInt() : 0,
-      isOn: kind == QuickControlKind.toggle ? isOn as bool? : null,
-    );
-  }
-
-  /// Parses a drained batch, dropping anything unreadable (see [tryParse]),
-  /// and returns it in the order the taps happened.
-  static List<QuickControlEvent> parseAll(Object? raw) {
-    if (raw is! List) return const <QuickControlEvent>[];
-    final events = raw.map(tryParse).whereType<QuickControlEvent>().toList()
-      // A stable sort: two taps in one millisecond keep native's order.
-      ..sort(_byRecordedAt);
-    return events;
-  }
-
-  static int _byRecordedAt(QuickControlEvent a, QuickControlEvent b) =>
-      a.recordedAt.compareTo(b.recordedAt);
-
-  static QuickControlKind? _kindNamed(Object? name) {
-    for (final kind in QuickControlKind.values) {
-      if (kind.name == name) return kind;
-    }
-    return null;
-  }
+  /// `null` for the other kinds.
+  final bool? isOn;
 
   @override
   bool operator ==(Object other) =>
@@ -108,4 +77,56 @@ class QuickControlEvent {
         QuickControlKind.toggle => 'QuickControlEvent($controlId -> $isOn)',
         QuickControlKind.button => 'QuickControlEvent($controlId tap)',
       };
+}
+
+/// Reads one event from the native map, or returns `null` if it is not one.
+///
+/// Lenient on purpose. By the time this runs the batch has already been
+/// removed from native storage, so throwing on one malformed entry would
+/// lose every good entry beside it. A bad entry is dropped; the rest stand.
+///
+/// Wire format, so not exported: apps receive parsed events only.
+QuickControlEvent? tryParseQuickControlEvent(Object? raw) {
+  if (raw is! Map) return null;
+  final id = raw['id'];
+  final controlId = raw['controlId'];
+  final kind = _kindNamed(raw['kind']);
+  final recordedAt = raw['recordedAt'];
+  if (id is! String || controlId is! String || kind == null) return null;
+  if (recordedAt is! num) return null;
+
+  final delta = raw['delta'];
+  final isOn = raw['isOn'];
+  if (kind == QuickControlKind.toggle && isOn is! bool) return null;
+
+  return QuickControlEvent(
+    id: id,
+    controlId: controlId,
+    kind: kind,
+    recordedAt: DateTime.fromMillisecondsSinceEpoch(recordedAt.toInt()),
+    delta: kind == QuickControlKind.counter && delta is num ? delta.toInt() : 0,
+    isOn: kind == QuickControlKind.toggle ? isOn as bool? : null,
+  );
+}
+
+/// Parses a drained batch, dropping anything unreadable (see
+/// [tryParseQuickControlEvent]), and returns it in the order the taps
+/// happened.
+List<QuickControlEvent> parseQuickControlEvents(Object? raw) {
+  if (raw is! List) return const <QuickControlEvent>[];
+  final events =
+      raw.map(tryParseQuickControlEvent).whereType<QuickControlEvent>().toList()
+        // A stable sort: two taps in one millisecond keep native's order.
+        ..sort(_byRecordedAt);
+  return events;
+}
+
+int _byRecordedAt(QuickControlEvent a, QuickControlEvent b) =>
+    a.recordedAt.compareTo(b.recordedAt);
+
+QuickControlKind? _kindNamed(Object? name) {
+  for (final kind in QuickControlKind.values) {
+    if (kind.name == name) return kind;
+  }
+  return null;
 }

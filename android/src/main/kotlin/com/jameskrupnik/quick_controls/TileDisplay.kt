@@ -45,12 +45,27 @@ data class ControlState(val values: Map<String, Long>, val toggles: Map<String, 
         pending.lastOrNull { it.controlId == id && it.kind == ControlKind.TOGGLE }?.isOn
             ?: toggles[id] ?: false
 
-    /** The event one tap records, given what the tile was showing when tapped. */
-    fun eventForTap(config: ControlConfig, pending: List<PendingEvent>, id: String, now: Long) =
+    /**
+     * The event one tap records, given what the tile was showing when tapped.
+     *
+     * [shownOn] is the toggle state actually on screen, when the tile has
+     * one. It wins over [currentIsOn] because the store can be behind the
+     * screen: once the app drains a toggle tap, nothing is pending and the
+     * baseline is still the old state until the app calls `setToggled`. A
+     * tap in that window would otherwise record the state the tile already
+     * shows, and the user's "off" would be recorded as a second "on".
+     */
+    fun eventForTap(
+        config: ControlConfig,
+        pending: List<PendingEvent>,
+        id: String,
+        now: Long,
+        shownOn: Boolean? = null,
+    ) =
         when (config.kind) {
             ControlKind.COUNTER -> PendingEvent(id, config.id, config.kind, now, delta = config.step)
             ControlKind.TOGGLE ->
-                PendingEvent(id, config.id, config.kind, now, isOn = !currentIsOn(config.id, pending))
+                PendingEvent(id, config.id, config.kind, now, isOn = !(shownOn ?: currentIsOn(config.id, pending)))
             ControlKind.BUTTON -> PendingEvent(id, config.id, config.kind, now)
         }
 }

@@ -30,10 +30,10 @@ class PendingEventLog(private val store: KeyValueStore) {
 
     /**
      * Appends the event [make] builds from what is pending *at that moment*,
-     * under the lock. A toggle needs this: it records the opposite of what it
-     * shows, and what it shows depends on the pending list, so reading the
-     * list and appending must be one step or two quick taps record the same
-     * state.
+     * under the lock. A toggle needs this when its tile has no state on
+     * screen to flip: it then works out what it shows from the pending list,
+     * so reading the list and appending must be one step or two quick taps
+     * record the same state.
      */
     fun record(make: (pending: List<PendingEvent>) -> PendingEvent): PendingEvent =
         synchronized(LOCK) {

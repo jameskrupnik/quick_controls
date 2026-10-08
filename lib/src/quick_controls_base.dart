@@ -37,11 +37,15 @@ class QuickControls {
   /// The one instance, shared by every caller in the app.
   static final QuickControls instance = QuickControls._();
 
-  /// The platform channel. Exposed only so tests can mock it.
+  /// The method channel to the native halves.
+  ///
+  /// Exposed only so tests can mock it.
   @visibleForTesting
   static const MethodChannel channel = MethodChannel('quick_controls');
 
-  /// Carries only "something changed" pings, never events. See [events].
+  /// The event channel that carries "something changed" pings, never events.
+  ///
+  /// See [events]. Exposed only so tests can mock it.
   @visibleForTesting
   static const EventChannel pingChannel = EventChannel('quick_controls/pings');
 
@@ -59,9 +63,11 @@ class QuickControls {
   /// delivered exactly once. Memory only, like any drained batch.
   List<QuickControlEvent> _undelivered = const <QuickControlEvent>[];
 
-  /// Whether this device has the surface at all: iOS 18 and later for
-  /// controls, Android 7 (API 24) and later for tiles. `false` on every other
-  /// platform and on any platform where the plugin is not registered.
+  /// Returns whether this device has the surface at all.
+  ///
+  /// That is iOS 18 and later for controls, Android 7 (API 24) and later for
+  /// tiles. `false` on every other platform and on any platform where the
+  /// plugin is not registered.
   ///
   /// On Android this is always `true` in practice, because the plugin's
   /// `minSdk` is 24. It is asked anyway so the answer comes from the device.
@@ -73,8 +79,11 @@ class QuickControls {
     }
   }
 
-  /// Declares the app's controls and binds them to native storage. Call once
-  /// per launch, before anything else, with the full list every time.
+  /// Declares the app's controls and binds them to native storage.
+  ///
+  /// Call once per launch, before anything else, with the full list every
+  /// time. Throws an [ArgumentError] for an id [QuickControl.isValidId]
+  /// rejects, an id declared twice, or a counter with a zero step.
   ///
   /// [iosAppGroupId] is required on iOS: it is the App Group the widget
   /// extension shares with the app, e.g. `group.com.example.app`, and must be
@@ -110,9 +119,13 @@ class QuickControls {
       ..addEntries(controls.map((c) => MapEntry(c.id, c)));
   }
 
-  /// The number to publish for counter [id]. What the control shows is this
-  /// plus any taps not yet drained, so call it *after* applying a drain, with
-  /// the total that includes them.
+  /// Publishes [value] as the baseline for counter [id].
+  ///
+  /// What the control shows is this plus any taps not yet drained, so call it
+  /// *after* applying a drain, with the total that includes them.
+  ///
+  /// Throws a [StateError] if [id] was not passed to [initialize], and an
+  /// [ArgumentError] if it is not a counter.
   Future<void> setValue(String id, int value) async {
     _require(id, QuickControlKind.counter, 'setValue');
     await channel.invokeMethod<void>('setValue', <String, Object?>{
@@ -121,9 +134,13 @@ class QuickControls {
     });
   }
 
-  /// The state to publish for toggle [id]. A pending toggle tap still wins on
-  /// screen until it is drained, since it is newer than anything the app has
-  /// seen.
+  /// Publishes [isOn] as the state of toggle [id].
+  ///
+  /// A pending toggle tap still wins on screen until it is drained, since it
+  /// is newer than anything the app has seen.
+  ///
+  /// Throws a [StateError] if [id] was not passed to [initialize], and an
+  /// [ArgumentError] if it is not a toggle.
   Future<void> setToggled(String id, {required bool isOn}) async {
     _require(id, QuickControlKind.toggle, 'setToggled');
     await channel.invokeMethod<void>('setToggled', <String, Object?>{
@@ -146,7 +163,7 @@ class QuickControls {
     // Held taps were drained earlier, so they are older than anything new.
     final held = _undelivered;
     _undelivered = const <QuickControlEvent>[];
-    return [...held, ...QuickControlEvent.parseAll(raw)];
+    return [...held, ...parseQuickControlEvents(raw)];
   }
 
   /// Taps that happen while the app is running and this stream is listened
@@ -195,16 +212,21 @@ class QuickControls {
     });
   }
 
-  /// Asks the system to redraw [id], or every control when `null`. Setting a
-  /// value already does this; call it after changing something the system
-  /// cannot see, such as a drawable.
+  /// Asks the system to redraw [id], or every control when `null`.
+  ///
+  /// Setting a value already does this; call it after changing something the
+  /// system cannot see, such as a drawable. Throws a [StateError] if [id] was
+  /// not passed to [initialize].
   Future<void> reload({String? id}) async {
     if (id != null) _require(id, null, 'reload');
     await channel.invokeMethod<void>('reload', <String, Object?>{'id': id});
   }
 
-  /// **Android 13+ only.** Shows the system's "Add tile to Quick Settings?"
-  /// dialog for [id]. The app must be in the foreground.
+  /// Shows the system's "Add tile to Quick Settings?" dialog for [id], on
+  /// **Android 13+ only**.
+  ///
+  /// The app must be in the foreground. Throws a [StateError] if [id] was not
+  /// passed to [initialize].
   ///
   /// Everywhere else this returns [QuickTileAddResult.unsupported] without a
   /// platform call. iOS has no equivalent: a person adds a control from the
@@ -218,7 +240,7 @@ class QuickControls {
       'requestAddTile',
       <String, Object?>{'id': id},
     );
-    return QuickTileAddResult.fromName(name);
+    return quickTileAddResultNamed(name);
   }
 
   /// Catches in Dart what native would otherwise catch as a silent no-op:
@@ -259,7 +281,7 @@ class QuickControls {
     }
   }
 
-  /// Test seam: forget declared controls and drop the event stream.
+  /// Forgets the declared controls and drops the event stream, for tests.
   @visibleForTesting
   Future<void> debugReset() async {
     _controls.clear();

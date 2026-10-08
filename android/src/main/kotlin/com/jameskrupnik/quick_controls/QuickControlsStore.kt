@@ -83,15 +83,16 @@ class QuickControlsStore(context: Context) {
         prefs.edit().putBoolean(TOGGLED + id, isOn).commit()
     }
 
-    /** The host app's drawable named [name], or the plugin's fallback. */
-    fun iconRes(name: String?): Int {
+    /** The host app's drawable [config] names, or the plugin's default for its kind. */
+    fun iconRes(config: ControlConfig): Int {
+        val name = config.androidIcon
         if (name != null) {
             // The name comes from Dart, so there is no R field to reference.
             @Suppress("DiscouragedApi")
             val id = appContext.resources.getIdentifier(name, "drawable", appContext.packageName)
             if (id != 0) return id
         }
-        return R.drawable.quick_controls_tile_default
+        return TileIcons.defaultFor(config.kind)
     }
 
     fun component(slot: Int) = ComponentName(appContext.packageName, SLOT_CLASSES[slot])
