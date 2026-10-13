@@ -184,6 +184,28 @@ void main() {
     });
   });
 
+  group('before initialize', () {
+    test('drainPendingEvents and reload throw without reaching native', () {
+      expect(controls.drainPendingEvents, throwsStateError);
+      expect(controls.reload, throwsStateError);
+      expect(() => controls.reload(id: 'rows'), throwsStateError);
+      expect(log, isEmpty);
+    });
+
+    test('a failed initialize still leaves them refused', () async {
+      messenger.setMockMethodCallHandler(QuickControls.channel, (call) async {
+        throw PlatformException(code: 'no_app_group');
+      });
+      await expectLater(initialize(), throwsA(isA<PlatformException>()));
+      expect(controls.drainPendingEvents, throwsStateError);
+    });
+
+    test('an empty declaration still counts as initialized', () async {
+      await initialize(const []);
+      expect(await controls.drainPendingEvents(), isEmpty);
+    });
+  });
+
   group('drainPendingEvents', () {
     setUp(initialize);
 

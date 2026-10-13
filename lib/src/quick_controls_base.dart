@@ -51,6 +51,10 @@ class QuickControls {
 
   final Map<String, QuickControl> _controls = <String, QuickControl>{};
 
+  /// Whether [initialize] has succeeded this launch. Separate from
+  /// [_controls] because an empty list is still a valid declaration.
+  bool _initialized = false;
+
   StreamController<QuickControlEvent>? _events;
   StreamSubscription<Object?>? _pings;
 
@@ -117,6 +121,7 @@ class QuickControls {
     _controls
       ..clear()
       ..addEntries(controls.map((c) => MapEntry(c.id, c)));
+    _initialized = true;
   }
 
   /// Publishes [value] as the baseline for counter [id].
@@ -158,7 +163,11 @@ class QuickControls {
   ///
   /// Also returns, first, any taps an [events] drain took after its last
   /// listener had gone.
+  ///
+  /// Throws a [StateError] if [initialize] has not succeeded yet. iOS cannot
+  /// find the App Group before then, so both platforms refuse alike.
   Future<List<QuickControlEvent>> drainPendingEvents() async {
+    _requireInitialized('drainPendingEvents');
     final raw = await channel.invokeMethod<List<Object?>>('drainPendingEvents');
     // Held taps were drained earlier, so they are older than anything new.
     final held = _undelivered;
@@ -215,9 +224,10 @@ class QuickControls {
   /// Asks the system to redraw [id], or every control when `null`.
   ///
   /// Setting a value already does this; call it after changing something the
-  /// system cannot see, such as a drawable. Throws a [StateError] if [id] was
-  /// not passed to [initialize].
+  /// system cannot see, such as a drawable. Throws a [StateError] if
+  /// [initialize] has not succeeded yet, or if [id] was not passed to it.
   Future<void> reload({String? id}) async {
+    _requireInitialized('reload');
     if (id != null) _require(id, null, 'reload');
     await channel.invokeMethod<void>('reload', <String, Object?>{'id': id});
   }
@@ -264,6 +274,14 @@ class QuickControls {
     }
   }
 
+  /// Refuses before native does: iOS answers `not_initialized` here while
+  /// Android would carry on, and the Dart API should not depend on which.
+  void _requireInitialized(String method) {
+    if (!_initialized) {
+      throw StateError('$method(): call initialize() first.');
+    }
+  }
+
   void _require(String id, QuickControlKind? kind, String method) {
     final control = _controls[id];
     if (control == null) {
@@ -285,6 +303,7 @@ class QuickControls {
   @visibleForTesting
   Future<void> debugReset() async {
     _controls.clear();
+    _initialized = false;
     await _pings?.cancel();
     _pings = null;
     await _events?.close();
