@@ -86,8 +86,9 @@ class QuickControl {
 
   /// The SF Symbol name the control shows on iOS.
   ///
-  /// Only the *default*: the symbol the extension draws before the app has
-  /// ever run comes from its Swift definition.
+  /// Replaces the Swift definition's `systemImage` once
+  /// `QuickControls.initialize` has run. Until then, and in the controls
+  /// gallery, the extension draws the Swift one.
   final String iosSymbol;
 
   /// The name of a drawable in the **host app's** resources for the tile.
