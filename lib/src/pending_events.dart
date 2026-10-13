@@ -8,8 +8,8 @@ import 'package:quick_controls/src/quick_control_event.dart';
 extension QuickControlEventBatch on Iterable<QuickControlEvent> {
   /// Returns the net counter change for [controlId], the sum of its deltas.
   int deltaFor(String controlId) => where(
-        (e) => e.controlId == controlId && e.kind == QuickControlKind.counter,
-      ).fold(0, (sum, e) => sum + e.delta);
+    (e) => e.controlId == controlId && e.kind == QuickControlKind.counter,
+  ).fold(0, (sum, e) => sum + e.delta);
 
   /// Returns the state [controlId] was last switched to, or `null` if it was
   /// not toggled in this batch.
@@ -31,6 +31,6 @@ extension QuickControlEventBatch on Iterable<QuickControlEvent> {
 
   /// Returns how many times the button [controlId] was pressed.
   int tapsFor(String controlId) => where(
-        (e) => e.controlId == controlId && e.kind == QuickControlKind.button,
-      ).length;
+    (e) => e.controlId == controlId && e.kind == QuickControlKind.button,
+  ).length;
 }

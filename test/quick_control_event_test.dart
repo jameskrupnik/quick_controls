@@ -10,15 +10,14 @@ void main() {
     Object? recordedAt = 1000,
     Object? delta = 1,
     Object? isOn,
-  }) =>
-      <String, Object?>{
-        'id': id,
-        'controlId': controlId,
-        'kind': kind,
-        'recordedAt': recordedAt,
-        'delta': delta,
-        'isOn': isOn,
-      };
+  }) => <String, Object?>{
+    'id': id,
+    'controlId': controlId,
+    'kind': kind,
+    'recordedAt': recordedAt,
+    'delta': delta,
+    'isOn': isOn,
+  };
 
   group('tryParseQuickControlEvent', () {
     test('reads a counter tap', () {
@@ -137,15 +136,14 @@ void main() {
       QuickControlKind kind, {
       int delta = 0,
       bool? isOn,
-    }) =>
-        QuickControlEvent(
-          id: 'e',
-          controlId: 'c',
-          kind: kind,
-          recordedAt: DateTime.fromMillisecondsSinceEpoch(0),
-          delta: delta,
-          isOn: isOn,
-        );
+    }) => QuickControlEvent(
+      id: 'e',
+      controlId: 'c',
+      kind: kind,
+      recordedAt: DateTime.fromMillisecondsSinceEpoch(0),
+      delta: delta,
+      isOn: isOn,
+    );
 
     test('a toggle without the state it switched to', () {
       expect(() => make(QuickControlKind.toggle), throwsAssertionError);

@@ -23,12 +23,12 @@ void main() {
   const go = QuickControl.button(id: 'go', title: 'Go', opensApp: true);
 
   Map<String, Object?> tap(String id, int at) => <String, Object?>{
-        'id': 'evt-$at',
-        'controlId': id,
-        'kind': 'counter',
-        'recordedAt': at,
-        'delta': 1,
-      };
+    'id': 'evt-$at',
+    'controlId': id,
+    'kind': 'counter',
+    'recordedAt': at,
+    'delta': 1,
+  };
 
   setUp(() async {
     log.clear();
@@ -70,8 +70,7 @@ void main() {
 
   Future<void> initialize([
     List<QuickControl> list = const [rows, light, go],
-  ]) =>
-      controls.initialize(controls: list, iosAppGroupId: 'group.test');
+  ]) => controls.initialize(controls: list, iosAppGroupId: 'group.test');
 
   group('isSupported', () {
     test('asks the platform', () async {
@@ -286,34 +285,36 @@ void main() {
       await sub.cancel();
     });
 
-    test('taps drained as the last listener leaves go to the next drain',
-        () async {
-      final sub = controls.events.listen((_) {});
-      await pumpEventQueue();
-      final sink = pingSink!;
+    test(
+      'taps drained as the last listener leaves go to the next drain',
+      () async {
+        final sub = controls.events.listen((_) {});
+        await pumpEventQueue();
+        final sink = pingSink!;
 
-      // Hold the stream's drain open in native, as a slow platform reply.
-      final reply = Completer<void>();
-      messenger.setMockMethodCallHandler(QuickControls.channel, (call) async {
-        if (call.method != 'drainPendingEvents') return null;
-        final batch = pending;
-        pending = <Object?>[];
-        await reply.future;
-        return batch;
-      });
-      pending = [tap('rows', 1), tap('rows', 2)];
-      sink.success(null);
-      await pumpEventQueue();
+        // Hold the stream's drain open in native, as a slow platform reply.
+        final reply = Completer<void>();
+        messenger.setMockMethodCallHandler(QuickControls.channel, (call) async {
+          if (call.method != 'drainPendingEvents') return null;
+          final batch = pending;
+          pending = <Object?>[];
+          await reply.future;
+          return batch;
+        });
+        pending = [tap('rows', 1), tap('rows', 2)];
+        sink.success(null);
+        await pumpEventQueue();
 
-      // The listener goes while native has already removed the taps.
-      await sub.cancel();
-      reply.complete();
-      await pumpEventQueue();
+        // The listener goes while native has already removed the taps.
+        await sub.cancel();
+        reply.complete();
+        await pumpEventQueue();
 
-      final next = await controls.drainPendingEvents();
-      expect(next.map((e) => e.id), ['evt-1', 'evt-2']);
-      expect(await controls.drainPendingEvents(), isEmpty);
-    });
+        final next = await controls.drainPendingEvents();
+        expect(next.map((e) => e.id), ['evt-1', 'evt-2']);
+        expect(await controls.drainPendingEvents(), isEmpty);
+      },
+    );
 
     test('a drain failing with any error does not stop later pings', () async {
       final received = <String>[];

@@ -190,14 +190,13 @@ class QuickControls {
   Stream<QuickControlEvent> get events {
     return (_events ??= StreamController<QuickControlEvent>.broadcast(
       onListen: () => _pings = pingChannel.receiveBroadcastStream().listen(
-            (_) => _drainIntoStream(),
-          ),
+        (_) => _drainIntoStream(),
+      ),
       onCancel: () async {
         await _pings?.cancel();
         _pings = null;
       },
-    ))
-        .stream;
+    )).stream;
   }
 
   void _drainIntoStream() {

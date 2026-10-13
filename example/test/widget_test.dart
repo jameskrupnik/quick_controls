@@ -46,7 +46,7 @@ void main() {
     );
     tester.binding.defaultBinaryMessenger.setMockStreamHandler(
       QuickControls.pingChannel,
-      MockStreamHandler.inline(onListen: (_, __) {}),
+      MockStreamHandler.inline(onListen: (_, _) {}),
     );
     await tester.pumpWidget(const QuickControlsExampleApp());
     await tester.pumpAndSettle();

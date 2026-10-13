@@ -28,14 +28,14 @@ class QuickControlEvent {
     required this.recordedAt,
     this.delta = 0,
     this.isOn,
-  })  : assert(
-          (kind == QuickControlKind.toggle) == (isOn != null),
-          'isOn is required for a toggle and must be null for other kinds',
-        ),
-        assert(
-          kind == QuickControlKind.counter || delta == 0,
-          'delta must be 0 for a toggle or a button',
-        );
+  }) : assert(
+         (kind == QuickControlKind.toggle) == (isOn != null),
+         'isOn is required for a toggle and must be null for other kinds',
+       ),
+       assert(
+         kind == QuickControlKind.counter || delta == 0,
+         'delta must be 0 for a toggle or a button',
+       );
 
   /// Unique per tap, minted where the tap happened.
   final String id;
@@ -75,10 +75,10 @@ class QuickControlEvent {
 
   @override
   String toString() => switch (kind) {
-        QuickControlKind.counter => 'QuickControlEvent($controlId +$delta)',
-        QuickControlKind.toggle => 'QuickControlEvent($controlId -> $isOn)',
-        QuickControlKind.button => 'QuickControlEvent($controlId tap)',
-      };
+    QuickControlKind.counter => 'QuickControlEvent($controlId +$delta)',
+    QuickControlKind.toggle => 'QuickControlEvent($controlId -> $isOn)',
+    QuickControlKind.button => 'QuickControlEvent($controlId tap)',
+  };
 }
 
 /// Reads one event from the native map, or returns `null` if it is not one.

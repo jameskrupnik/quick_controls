@@ -15,21 +15,20 @@ void main() {
     String controlId, {
     required bool isOn,
     int at = 0,
-  }) =>
-      QuickControlEvent(
-        id: '$controlId-$isOn-$at',
-        controlId: controlId,
-        kind: QuickControlKind.toggle,
-        recordedAt: DateTime.fromMillisecondsSinceEpoch(at),
-        isOn: isOn,
-      );
+  }) => QuickControlEvent(
+    id: '$controlId-$isOn-$at',
+    controlId: controlId,
+    kind: QuickControlKind.toggle,
+    recordedAt: DateTime.fromMillisecondsSinceEpoch(at),
+    isOn: isOn,
+  );
 
   QuickControlEvent tap(String controlId, [int at = 0]) => QuickControlEvent(
-        id: '$controlId-tap-$at',
-        controlId: controlId,
-        kind: QuickControlKind.button,
-        recordedAt: DateTime.fromMillisecondsSinceEpoch(at),
-      );
+    id: '$controlId-tap-$at',
+    controlId: controlId,
+    kind: QuickControlKind.button,
+    recordedAt: DateTime.fromMillisecondsSinceEpoch(at),
+  );
 
   test('deltaFor sums one counter and ignores the others', () {
     final batch = [counter('rows', 1), counter('rows', 1, 1), counter('st', 5)];

@@ -54,8 +54,8 @@ class QuickControl {
     this.iosSymbol = 'power',
     this.androidIcon,
     this.opensApp = false,
-  })  : kind = QuickControlKind.toggle,
-        step = 0;
+  }) : kind = QuickControlKind.toggle,
+       step = 0;
 
   /// Creates a plain action.
   ///
@@ -66,8 +66,8 @@ class QuickControl {
     this.iosSymbol = 'hand.tap',
     this.androidIcon,
     this.opensApp = false,
-  })  : kind = QuickControlKind.button,
-        step = 0;
+  }) : kind = QuickControlKind.button,
+       step = 0;
 
   /// The control's id: letters, digits, `_`, `-` and `.` only.
   ///
@@ -155,12 +155,12 @@ extension QuickControlWire on QuickControl {
   /// Kind goes over as its name so the Swift and Kotlin enums can be matched
   /// by string rather than by index.
   Map<String, Object?> toMap() => <String, Object?>{
-        'id': id,
-        'kind': kind.name,
-        'title': title,
-        'iosSymbol': iosSymbol,
-        'androidIcon': androidIcon,
-        'step': step,
-        'opensApp': opensApp,
-      };
+    'id': id,
+    'kind': kind.name,
+    'title': title,
+    'iosSymbol': iosSymbol,
+    'androidIcon': androidIcon,
+    'step': step,
+    'opensApp': opensApp,
+  };
 }
