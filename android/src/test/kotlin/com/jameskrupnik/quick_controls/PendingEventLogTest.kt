@@ -8,14 +8,19 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/** A map standing in for SharedPreferences. */
+/**
+ * A map standing in for SharedPreferences. With [failCommits] set it does
+ * what a failed `commit()` does: memory changes, and the answer is `false`.
+ */
 private class MapStore : KeyValueStore {
     val map = ConcurrentHashMap<String, String>()
+    var failCommits = false
 
     override fun read(key: String): String? = map[key]
 
-    override fun write(entries: Map<String, String?>) {
+    override fun write(entries: Map<String, String?>): Boolean {
         entries.forEach { (k, v) -> if (v == null) map.remove(k) else map[k] = v }
+        return !failCommits
     }
 }
 
@@ -29,6 +34,17 @@ internal class PendingEventLogTest {
         log.append(tap(2))
         assertEquals(listOf("e1", "e2"), log.drain().map { it.id })
         assertTrue(log.drain().isEmpty())
+    }
+
+    @Test
+    fun drain_whoseCommitFails_returnsNothingAndKeepsTheTaps() {
+        val store = MapStore()
+        val log = PendingEventLog(store)
+        log.append(tap(1))
+        store.failCommits = true
+        assertTrue(log.drain().isEmpty())
+        store.failCommits = false
+        assertEquals(listOf("e1"), log.drain().map { it.id })
     }
 
     @Test

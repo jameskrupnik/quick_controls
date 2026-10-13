@@ -26,11 +26,14 @@ class QuickControlsStore(context: Context) {
     val events = PendingEventLog(object : KeyValueStore {
         override fun read(key: String): String? = prefs.getString(key, null)
 
-        override fun write(entries: Map<String, String?>) {
+        override fun write(entries: Map<String, String?>): Boolean {
             val editor = prefs.edit()
             entries.forEach { (k, v) -> if (v == null) editor.remove(k) else editor.putString(k, v) }
-            // commit, not apply: see KeyValueStore.
-            editor.commit()
+            // commit, not apply: see KeyValueStore. It blocks the main thread
+            // when the plugin drains, which is acceptable here: the file holds
+            // a few tiles' config and a short list of taps, so the write is
+            // tile-sized.
+            return editor.commit()
         }
     })
 

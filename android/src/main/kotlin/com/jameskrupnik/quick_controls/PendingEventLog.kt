@@ -44,11 +44,20 @@ class PendingEventLog(private val store: KeyValueStore) {
             event
         }
 
-    /** Returns every pending tap and empties the log in one step. */
+    /**
+     * Returns every pending tap and empties the log in one step.
+     *
+     * If emptying the log does not reach disk, returns nothing: the taps are
+     * still in the file, so reporting them as drained would deliver them a
+     * second time after the next cold start. SharedPreferences has already
+     * dropped them from memory by then, so they are written back to match
+     * the file, and the next drain tries again.
+     */
     fun drain(): List<PendingEvent> = synchronized(LOCK) {
         val events = readLocked()
-        if (events.isNotEmpty()) store.write(mapOf(KEY to null))
-        events
+        if (events.isEmpty() || store.write(mapOf(KEY to null))) return@synchronized events
+        store.write(mapOf(KEY to encode(events)))
+        emptyList()
     }
 
     /** What is pending, without removing it — for a tile drawing its count. */

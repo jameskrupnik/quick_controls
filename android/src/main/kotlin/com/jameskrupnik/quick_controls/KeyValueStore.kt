@@ -12,6 +12,9 @@ package com.jameskrupnik.quick_controls
 interface KeyValueStore {
     fun read(key: String): String?
 
-    /** Writes every entry in one commit; a `null` value removes the key. */
-    fun write(entries: Map<String, String?>)
+    /**
+     * Writes every entry in one commit; a `null` value removes the key.
+     * Returns whether the commit reached disk.
+     */
+    fun write(entries: Map<String, String?>): Boolean
 }
