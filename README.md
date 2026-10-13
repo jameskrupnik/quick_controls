@@ -213,6 +213,12 @@ Intent". Delete the generated Swift files except the bundle. If you already
 have a widget extension, as Stitch Keeper's `CounterWidget` does, use that
 one; controls can sit beside home screen widgets in one bundle.
 
+Then, in Runner's Build Phases, drag **Embed Foundation Extensions** above
+**Thin Binary**. Xcode appends the embed phase last, after Flutter's Thin
+Binary script, and the build then fails with "Cycle inside Runner; building
+could produce unreliable results". The example's Runner has the phases in
+this order.
+
 Set the extension's deployment target to iOS 17 or 18. The kit guards
 everything with `@available(iOS 18.0, *)`, so a lower target is fine as long
 as the bundle does too (see step 6).
