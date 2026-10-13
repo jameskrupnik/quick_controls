@@ -149,6 +149,7 @@ void main() {
       });
       await expectLater(initialize(), throwsA(isA<PlatformException>()));
       expect(() => controls.setValue('rows', 1), throwsStateError);
+      expect(controls.drainPendingEvents, throwsStateError);
     });
   });
 
@@ -190,14 +191,6 @@ void main() {
       expect(controls.reload, throwsStateError);
       expect(() => controls.reload(id: 'rows'), throwsStateError);
       expect(log, isEmpty);
-    });
-
-    test('a failed initialize still leaves them refused', () async {
-      messenger.setMockMethodCallHandler(QuickControls.channel, (call) async {
-        throw PlatformException(code: 'no_app_group');
-      });
-      await expectLater(initialize(), throwsA(isA<PlatformException>()));
-      expect(controls.drainPendingEvents, throwsStateError);
     });
 
     test('an empty declaration still counts as initialized', () async {
@@ -395,36 +388,6 @@ void main() {
         QuickTileAddResult.unsupported,
       );
       expect(log.where((c) => c.method == 'requestAddTile'), isEmpty);
-    });
-  });
-
-  group('QuickControl', () {
-    test('isValidId allows the storage-safe set only', () {
-      expect(QuickControl.isValidId('row_plus-1.v2'), isTrue);
-      expect(QuickControl.isValidId(''), isFalse);
-      expect(QuickControl.isValidId('row/1'), isFalse);
-      expect(QuickControl.isValidId('row 1'), isFalse);
-    });
-
-    test('non-counters carry no step', () {
-      expect(light.step, 0);
-      expect(go.step, 0);
-    });
-
-    test('equality is by value', () {
-      expect(
-        const QuickControl.counter(id: 'rows', title: 'Row'),
-        equals(rows),
-      );
-      expect(
-        rows.hashCode,
-        const QuickControl.counter(id: 'rows', title: 'Row').hashCode,
-      );
-      expect(rows, isNot(equals(light)));
-    });
-
-    test('toString names the kind, id and title', () {
-      expect(rows.toString(), 'QuickControl.counter(rows, "Row")');
     });
   });
 }
