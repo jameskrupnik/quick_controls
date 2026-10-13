@@ -24,13 +24,15 @@ import 'package:quick_controls/src/quick_tile_add_result.dart';
 /// await QuickControls.instance.setValue('row_plus_one', rows);
 /// ```
 ///
-/// ### Exactly once
+/// ### Delivered once
 ///
 /// Every event is handed to Dart once. [drainPendingEvents] removes what it
 /// returns in the same native critical section that read it; [events] is
 /// built on the same drain, triggered by a ping from native while the app is
 /// running and something is listening. So an app may use both — drain on
-/// resume, listen while open — and no tap is counted twice.
+/// resume, listen while open — and no tap is counted twice. Delivery is not
+/// persistence: a tap drained but not yet saved by the app is lost if the
+/// process dies.
 class QuickControls {
   QuickControls._();
 
@@ -64,7 +66,7 @@ class QuickControls {
 
   /// Taps a stream drain took from native after its last listener left.
   /// Handed out first by the next [drainPendingEvents], so they are still
-  /// delivered exactly once. Memory only, like any drained batch.
+  /// delivered once. Memory only, like any drained batch.
   List<QuickControlEvent> _undelivered = const <QuickControlEvent>[];
 
   /// Returns whether this device has the surface at all.

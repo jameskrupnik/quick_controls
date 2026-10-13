@@ -86,7 +86,7 @@ The API, briefly:
 | `isSupported()` | iOS 18+, Android API 24+, `false` where the plugin is absent |
 | `QuickControlEventBatch` | `deltaFor`, `latestToggleFor`, `tapsFor` over a drained list |
 
-### Exactly once
+### Delivered once
 
 Every tap reaches Dart once, through `drainPendingEvents()` or through
 `events`, never both. The `events` stream is built on the drain. Native sends

@@ -1,7 +1,7 @@
 name: quick_controls
 description: >-
   One Dart API for iOS 18 Control Center controls and Android Quick Settings
-  tiles. Taps are recorded as pending events your app applies exactly once.
+  tiles. Taps are recorded as pending events delivered to your app once.
 version: 0.1.0
 repository: https://github.com/jameskrupnik/quick_controls
 issue_tracker: https://github.com/jameskrupnik/quick_controls/issues

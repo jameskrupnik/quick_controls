@@ -10,7 +10,7 @@ import io.flutter.plugin.common.EventChannel
  * It carries a ping — "something was recorded" — and never the event itself.
  * Dart answers a ping by draining, so an event reaches Dart only through the
  * drain, and the drain's lock is the only thing that has to be right for a
- * tap to be delivered exactly once.
+ * tap to be delivered once.
  *
  * A static is correct here, not a shortcut: the tile service and the plugin
  * share a process (see the manifest) but not an object graph, and the tile

@@ -1,12 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:quick_controls/src/quick_control.dart';
 
-/// One tap on a control, recorded by the extension or tile and handed to the
-/// app exactly once — either by `QuickControls.drainPendingEvents` or on
+/// One tap on a control, recorded by the extension or tile and delivered to
+/// the app once — either by `QuickControls.drainPendingEvents` or on
 /// `QuickControls.events`, never both.
 ///
-/// The [id] is unique per tap and minted where the tap happened. An app that
-/// persists taps somewhere that can fail halfway can store it to make
+/// Delivered once is not applied once: the drain removes the event from
+/// native storage before the app has saved it, so a crash in between loses
+/// it. The [id] is unique per tap and minted where the tap happened. An app
+/// that persists taps somewhere that can fail halfway can store it to make
 /// re-applying a batch idempotent.
 @immutable
 class QuickControlEvent {
