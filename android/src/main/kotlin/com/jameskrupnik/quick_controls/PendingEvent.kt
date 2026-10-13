@@ -6,7 +6,7 @@ import org.json.JSONObject
  * One recorded tap. The [id] is minted at the tap, so the app can make
  * applying a batch idempotent if its own save can fail halfway.
  *
- * The field names are the contract with Dart's `QuickControlEvent.tryParse`
+ * The field names are the contract with Dart's `tryParseQuickControlEvent`
  * and with the iOS kit's `QuickControlsStore`; the three must agree.
  */
 data class PendingEvent(

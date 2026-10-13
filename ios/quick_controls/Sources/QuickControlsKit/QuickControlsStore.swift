@@ -199,7 +199,7 @@ public struct QuickControlConfig: Equatable {
 }
 
 /// One recorded tap. Field names are the contract with Dart's
-/// `QuickControlEvent.tryParse` and Kotlin's `PendingEvent`.
+/// `tryParseQuickControlEvent` and Kotlin's `PendingEvent`.
 public struct QuickControlPendingEvent: Equatable {
     public let id: String
     public let controlId: String
